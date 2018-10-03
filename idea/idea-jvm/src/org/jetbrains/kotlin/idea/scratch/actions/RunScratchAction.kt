@@ -19,23 +19,28 @@ package org.jetbrains.kotlin.idea.scratch.actions
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.compiler.CompilerManager
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.DumbService
 import org.jetbrains.kotlin.idea.KotlinBundle
 import org.jetbrains.kotlin.idea.scratch.ScratchFile
 import org.jetbrains.kotlin.idea.scratch.ScratchFileLanguageProvider
+import org.jetbrains.kotlin.idea.scratch.getScratchPanel
 import org.jetbrains.kotlin.idea.scratch.output.ScratchOutputHandlerAdapter
 import org.jetbrains.kotlin.idea.scratch.printDebugMessage
 import org.jetbrains.kotlin.idea.scratch.ui.ScratchTopPanel
 import org.jetbrains.kotlin.idea.scratch.LOG as log
 
-class RunScratchAction(private val scratchPanel: ScratchTopPanel) : AnAction(
+class RunScratchAction : AnAction(
     KotlinBundle.message("scratch.run.button"),
     KotlinBundle.message("scratch.run.button"),
     AllIcons.Actions.Execute
 ) {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
+        val scratchPanel = getScratchPanel(e) ?: return
 
         val scratchFile = scratchPanel.scratchFile
         val psiFile = scratchFile.getPsiFile() ?: return
@@ -104,5 +109,19 @@ class RunScratchAction(private val scratchPanel: ScratchTopPanel) : AnAction(
         } else {
             executeScratch()
         }
+    }
+
+    override fun update(e: AnActionEvent) {
+        val presentation = e.presentation
+        val project = e.project ?: return
+        val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return
+        val scratchPanel = TextEditorProvider.getInstance().getTextEditor(editor).getScratchPanel()
+
+        presentation.isVisible = scratchPanel != null
+    }
+
+    private fun getScratchPanel(e: AnActionEvent): ScratchTopPanel? {
+        val editor = e.getData(CommonDataKeys.EDITOR) ?: return null
+        return TextEditorProvider.getInstance().getTextEditor(editor).getScratchPanel()
     }
 }
