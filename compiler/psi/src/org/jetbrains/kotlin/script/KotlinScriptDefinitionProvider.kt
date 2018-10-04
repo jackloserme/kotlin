@@ -24,6 +24,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtScript
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
@@ -47,7 +49,7 @@ fun findScriptDefinition(file: VirtualFile, project: Project): KotlinScriptDefin
 
     val psiFile = PsiManager.getInstance(project).findFile(file)
     if (psiFile != null) {
-        if (psiFile !is KtFile || !psiFile.isScript()) {
+        if (psiFile !is KtFile || psiFile.getChildOfType<KtScript>() == null) {
             return null
         }
         return psiFile.script?.kotlinScriptDefinition
