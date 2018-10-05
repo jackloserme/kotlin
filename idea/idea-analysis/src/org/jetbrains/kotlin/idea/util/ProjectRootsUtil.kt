@@ -168,6 +168,7 @@ object ProjectRootsUtil {
         }
     }
 
+    @JvmOverloads
     @JvmStatic
     fun isInProjectSource(element: PsiElement, includeScriptsOutsideSourceRoots: Boolean = false): Boolean {
         return isInContent(
