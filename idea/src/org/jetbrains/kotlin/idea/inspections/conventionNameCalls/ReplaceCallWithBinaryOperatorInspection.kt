@@ -52,7 +52,7 @@ import org.jetbrains.kotlin.util.OperatorNameConventions
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
 
 class ReplaceCallWithBinaryOperatorInspection : AbstractApplicabilityBasedInspection<KtDotQualifiedExpression>(
-        KtDotQualifiedExpression::class.java
+    KtDotQualifiedExpression::class.java
 ) {
 
     private fun IElementType.inverted(): KtSingleValueToken? = when (this) {
@@ -136,7 +136,7 @@ class ReplaceCallWithBinaryOperatorInspection : AbstractApplicabilityBasedInspec
     }
 
     private fun PsiElement.getWrappingPrefixExpressionIfAny() =
-            (getLastParentOfTypeInRow<KtParenthesizedExpression>() ?: this).parent as? KtPrefixExpression
+        (getLastParentOfTypeInRow<KtParenthesizedExpression>() ?: this).parent as? KtPrefixExpression
 
     private fun operation(calleeExpression: KtSimpleNameExpression): KtSingleValueToken? {
         val identifier = calleeExpression.getReferencedNameAsName()
@@ -160,8 +160,7 @@ class ReplaceCallWithBinaryOperatorInspection : AbstractApplicabilityBasedInspec
                 val token = binaryParent.operationToken as? KtSingleValueToken ?: return null
                 if (token in OperatorConventions.COMPARISON_OPERATIONS) {
                     if (notZero == binaryParent.left) token else token.inverted()
-                }
-                else {
+                } else {
                     null
                 }
             }
